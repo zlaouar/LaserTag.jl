@@ -41,7 +41,7 @@ function fill_square(o::IO, x, y, color, opacity=0.5) # maybe opacity should be 
     println(o, "\\fill[$(color), opacity=$opacity] ($((x-1) * sqsize),$((y-1) * sqsize)) rectangle +($sqsize,$sqsize);")
 end
 
-function show_belief(o::IO, b::ParticleCollection{LTState})
+function show_belief(o::IO, b::AbstractParticleBelief{LTState})
     d = Dict{Coord, Int}()
     total = 0
     for p in particles(b)
