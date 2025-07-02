@@ -12,6 +12,7 @@ using Parameters
 using StatsBase
 using Distributions
 using IterTools
+using CairoMakie
 
 export
     LaserTagPOMDP,
@@ -27,7 +28,10 @@ export
     BestExpected, DESPOTEmu, gen_lasertag,
     cpp_emu_lasertag,
     tikz_pic,
-    n_clear_cells
+    n_clear_cells,
+    setup_lasertag_plot,
+    update_lasertag_plot!,
+    RandomWalk
 
 
 const Coord = SVector{2,Int}
@@ -60,12 +64,15 @@ function add_if_inside(f::Floor, x::Coord, dx::Coord)
 end
 
 abstract type ObsModel end
+abstract type TransitionModel end
+struct RandomWalk <: TransitionModel end
+struct Evade <: TransitionModel end
 
 obs_type(om::ObsModel) = obs_type(typeof(om))
 
 include("distance_cache.jl")
 
-@with_kw struct LaserTagPOMDP{M<:ObsModel,O<:Union{CMeas,DMeas}} <: POMDP{LTState,Int,O}
+@with_kw struct LaserTagPOMDP{T<:TransitionModel,M<:ObsModel,O<:Union{CMeas,DMeas}} <: POMDP{LTState,Int,O}
     tag_reward::Float64 = 10.0
     step_cost::Float64 = 1.0
     discount::Float64 = 0.95
@@ -75,6 +82,7 @@ include("distance_cache.jl")
     diag_actions::Bool = false
     dcache::LTDistanceCache = LTDistanceCache(floor, obstacles)
     obs_model::M = DESPOTEmu(floor, 2.5)
+    transition_model::T 
 end
 
 ltfloor(m::LaserTagPOMDP) = m.floor
@@ -152,6 +160,6 @@ POMDPs.discount(p::LaserTagPOMDP) = p.discount
 include("problem_gen.jl")
 include("heuristics.jl")
 include("visualization.jl")
-
+include("cairomakieviz.jl")
 
 end # module

@@ -5,6 +5,7 @@ version = "0.1.4"
 
 [deps]
 AutoHashEquals = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 POMDPTools = "7588e00f-9cae-40de-98dc-e0c70c48cdd7"
@@ -20,6 +21,7 @@ TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"
 
 [compat]
 AutoHashEquals = "0.2, 1, 2"
+CairoMakie = "0.14.0"
 Distributions = "0.22 - 0.24, 0.25"
 IterTools = "1"
 POMDPTools = "0.1, 1"
@@ -27,10 +29,10 @@ POMDPs = "0.9, 1"
 Parameters = "0.12"
 ParticleFilters = "0.5, 0.6"
 SpecialFunctions = "1, 2"
+StableRNGs = "1"
 StaticArrays = "0.12, 1"
 StatsBase = "0.34"
 TikzPictures = "3"
-StableRNGs = "1"
 julia = "1"
 
 [extras]

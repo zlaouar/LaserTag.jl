@@ -75,7 +75,7 @@ function Base.length(d::LTTransDist)
 end
 
 
-function POMDPs.transition(p::LaserTagPOMDP, s::LTState, a::Int)
+function POMDPs.transition(p::LaserTagPOMDP{Evade}, s::LTState, a::Int)
     if s.terminal || a == TAG_ACTION && s.robot == s.opponent
         return LTTransDist(true, s.robot, s.opponent, SVector(1., 0., 0., 0., 0.))
     end
@@ -124,3 +124,37 @@ function POMDPs.transition(p::LaserTagPOMDP, s::LTState, a::Int)
     return LTTransDist(next_rob, opp, probs)
 end
 
+function POMDPs.transition(p::LaserTagPOMDP{RandomWalk}, s::LTState, a::Int)
+    if s.terminal || a == TAG_ACTION && s.robot == s.opponent
+        return LTTransDist(true, s.robot, s.opponent, SVector(1., 0., 0., 0., 0.))
+    end
+
+    probs = fill!(MVector{5, Float64}(undef), 0.0)
+
+    opp = s.opponent
+    rob = s.robot
+    f = p.floor
+    obst = p.obstacles
+
+    potential_moves = [Coord(0,1), Coord(1,0), Coord(0,-1), Coord(-1,0)]
+    neighbors = []
+    for (i,move) in enumerate(potential_moves)
+        if !opaque(f, obst, opp + move)
+            push!(neighbors, i)
+        end
+    end
+
+    prob_per_cell = 1.0 / (length(neighbors) + 1)
+    for cell in neighbors
+        probs[cell] = prob_per_cell
+    end
+    
+    probs[5] = prob_per_cell
+
+    @assert sum(probs) ≈ 1.0 "Transition probabilities do not sum to 1.0: $(probs)\n 
+    neigbors: $(neighbors)\n
+    potential_moves: $(potential_moves)\n"
+    next_rob = add_if_clear(f, obst, rob, ACTION_DIRS[a])
+
+    return LTTransDist(next_rob, opp, probs)
+end

@@ -64,6 +64,7 @@ function gen_lasertag(n_rows::Int=7,
                       rng=Random.GLOBAL_RNG,
                       obstacles=gen_obstacles(n_rows, n_cols, 8, rng),
                       obs_model::ObsModel=DESPOTEmu(Floor(n_rows, n_cols), 2.5),
+                      transition_model::TransitionModel=Evade(),
                       robot_position_known::Bool=false,
                       kwargs...)
 
@@ -75,9 +76,11 @@ function gen_lasertag(n_rows::Int=7,
     end
     M = typeof(obs_model)
     O = obs_type(M)
-    return LaserTagPOMDP{M, O}(;floor=f,
+    T = typeof(transition_model)
+    return LaserTagPOMDP{T, M, O}(;floor=f,
                                 obstacles=obstacles,
                                 robot_init=r, 
                                 obs_model=obs_model,
+                                transition_model=transition_model,
                                 kwargs...)
 end
